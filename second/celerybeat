@@ -115,6 +115,23 @@ DEFAULT_CELERYBEAT="$CELERY_BIN beat"
 CELERYBEAT=${CELERYBEAT:-$DEFAULT_CELERYBEAT}
 CELERYBEAT_LOG_LEVEL=${CELERYBEAT_LOG_LEVEL:-${CELERYBEAT_LOGLEVEL:-$DEFAULT_LOG_LEVEL}}
 
+# Absolute or relative path to the 'celery' command:
+CELERY_BIN="/usr/local/bin/celery"
+#CELERY_BIN="/virtualenvs/def/bin/celery"
+
+# App instance to use
+# comment out this line if you don't use an app
+CELERY_APP="proj"
+# or fully qualified:
+#CELERY_APP="proj.tasks:app"
+
+# Where to chdir at start.
+CELERYBEAT_CHDIR="/opt/Myproject/"
+
+# Extra arguments to celerybeat
+CELERYBEAT_OPTS="--schedule=/var/run/celery/celerybeat-schedule"
+
+
 # Sets --app argument for CELERY_BIN
 CELERY_APP_ARG=""
 if [ ! -z "$CELERY_APP" ]; then
