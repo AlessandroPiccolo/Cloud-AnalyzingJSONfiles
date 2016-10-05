@@ -1,5 +1,3 @@
-#from task1.celery import app
-#import json
 from celery import Celery
 
 def make_celery(app):
