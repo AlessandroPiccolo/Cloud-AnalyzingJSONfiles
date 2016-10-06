@@ -23,6 +23,6 @@ with open('05cb5036-2170-401b-947d-68f9191b21c6', 'r') as twitter_text:
 			continue	
 
 print('number of word counted ' + str(count))
-
+ 
 for count in pronomenCounter:
 	print(count)
