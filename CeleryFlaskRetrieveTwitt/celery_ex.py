@@ -34,21 +34,26 @@ def process():
 # Task that is beeing done by the celery workers
 @celery.task(name= 'celery_ex.tweetRetrieveAndCount')
 def tweetRetrieveAndCount():
+	count = 0 #remove
 	# Words to count (pronomen in this case)	
-	pronomen = [['han',0], ['hon',0], ['hen',0], ['den',0], ['det',0], ['denna',0], ['denne',0]]
+	pronomen = ['han', 'hon', 'hen', 'den', 'det', 'denna', 'denne']
+	pronomenCounter = [0]*len(pronomen)
 	# Go through each json file in container
 	for data in conn.get_container(container_name)[1]:
 		# data['name'] --> file name
-		obj_tuple = conn.get_object(container_name, data['name'])		
+		obj_tuple = conn.get_object(container_name, data['name'])	
+		print(str(obj_tuple[1]))	
 		# Count each pronomen inside json file, print inside new json
 		# Name of file data['name']		
-		with open(data['name'], 'r') as twitter_text:
-			 
-			#twitter_text.write(obj_tuple[1]) # Downloads json file on machine			
-			for line in twitter_text: #obj_tuple[1]:
-				for word[0] in pronomen:
-					if(word in line['text'] and ('RT' not in line['text'])):
-						word[1]+=1			
+		#with open(data['name'], 'r') as twitter_text:
+		with open(data['name']) as twitter_text:		
+			twitter_text.write(obj_tuple[1]) # Downloads json file on machine			
+			for line in obj_tuple[1]
+				for i in range(len(pronomen)):
+					if(pronomen[i] in tweet['text'] and ('RT' not in tweet['text'])):
+					pronomenCounter[i] += 1	
+					count += 1
+# get result : ) ? returna nåt kanskeke		
 	return "End celery tweetRetrieve"
 
 if __name__ == '__main__':
