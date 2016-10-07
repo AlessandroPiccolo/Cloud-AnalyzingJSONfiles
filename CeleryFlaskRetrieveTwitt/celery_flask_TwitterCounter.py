@@ -30,7 +30,7 @@ celery = make_celery(app)
 @app.route('/twitterCount')
 def process():
 	tweetRetrieveAndCount.delay()
-	
+
 	return "End flask route\n"
 
 # Task that is beeing done by the celery workers
@@ -38,7 +38,7 @@ def process():
 def tweetRetrieveAndCount():
 	# Words to count (pronomen in this case)	
 	pronomen = {'han': 0, 'hon': 0, 'hen': 0, 
-				'den': 0, 'det': 0, 'denna': 0, 'denne': 0}
+		    'den': 0, 'det': 0, 'denna': 0, 'denne': 0}
 
 # Goes through each json file in container
 # for data in conn.get_container(container_name)[1]:
@@ -46,7 +46,7 @@ def tweetRetrieveAndCount():
 
 # Only check one json file in container	
 	obj_tuple = conn.get_object(container_name, '05cb5036-2170-401b-947d-68f9191b21c6')
-	
+
 	# Download file (Can not figure out how to skip this step...)
 	with open("temp", 'w') as twitter_text:
 		twitter_text.write(obj_tuple[1])
@@ -69,7 +69,7 @@ def tweetRetrieveAndCount():
 	with open("result", 'w') as result:
 		result.write(json.dumps(pronomen, ensure_ascii=False))		
 	
-	return "End celery tweetRetrieve count = " + str(count)
+	return "End celery tweetRetrieve"
 
 if __name__ == '__main__':
 	app.run(debug=True)
