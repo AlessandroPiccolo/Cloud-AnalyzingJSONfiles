@@ -1,5 +1,3 @@
-#from task1.celery import app
-#import json
 from celery import Celery
 
 def make_celery(app):
@@ -15,6 +13,3 @@ def make_celery(app):
 	celery.Task = ContextTask
 	return celery
 
-#@app.task
-#def add(x,y):
-#	return x+y
