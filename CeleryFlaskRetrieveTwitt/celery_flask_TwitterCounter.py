@@ -33,7 +33,7 @@ def process():
 
 	return "End flask route\n"
 
-# Task that is beeing done by the celery workers
+# Task that is beeing done by the celery worker
 @celery.task(name= 'celery_ex.tweetRetrieveAndCount')
 def tweetRetrieveAndCount():
 	# Words to count (pronomen in this case)	
