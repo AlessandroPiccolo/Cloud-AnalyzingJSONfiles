@@ -4,25 +4,27 @@ try:
 except ImportError:
 	import simplejson as json
 
+
+from collections import Counter
+
+
 #remove
 count = 0
 
-pronomen = ['han', 'hon', 'hen', 'den', 'det', 'denna', 'denne']
-pronomenCounter = [0]*len(pronomen)
+pronomen = {'han': 0, 'hon':0, 'hen':0, 'den':0, 'det':0, 'denna':0, 'denne':0}
 	
-with open('05cb5036-2170-401b-947d-68f9191b21c6', 'r') as twitter_text: 	
+with open('temp (copy)', 'r') as twitter_text: 	
 	for line in twitter_text:
 		try:
 			tweet = json.loads(line)
-			for i in range(len(pronomen)):
-				#print(str(pronomen[i]))
-				if(pronomen[i] in tweet['text'] and ('RT' not in tweet['text'])):
-					pronomenCounter[i] += 1	
-					count += 1	
+			print(tweet['text'])
+			if 'retweeted_status' not in tweet:
+				# Basically dictionary, count of each word --> {'i': 2, 'am': 2}
+				countsWord = Counter(tweet['text'].lower().split())
+			 	for key in pronomen:
+					if key in countsWord:
+						pronomen[key] += countsWord[key]
 		except:
 			continue	
-
-print('number of word counted ' + str(count))
  
-for count in pronomenCounter:
-	print(count)
+print(pronomen)
