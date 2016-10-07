@@ -7,8 +7,13 @@ try:
 except ImportError:
 	import simplejson as json
 
-# Containers name to retreive documents from (do not forget to source g.. first)
-container_name = 'tweets'
+# Containers name to retreive documents from
+container_name 	= 'tweets'
+# Words to count (pronomen in this case)	
+pronomen 		= ['han', 'hon', 'hen', 'den', 'det', 'denna', 'denne']
+pronomenCounter = [0]*len(pronomen)
+# Total count of pronomens
+count 			= 0 
 
 # Setup connection to swift client containers
 config = {'user':os.environ['OS_USERNAME'],
@@ -34,27 +39,30 @@ def process():
 # Task that is beeing done by the celery workers
 @celery.task(name= 'celery_ex.tweetRetrieveAndCount')
 def tweetRetrieveAndCount():
-	count = 0 #remove
-	# Words to count (pronomen in this case)	
-	pronomen = ['han', 'hon', 'hen', 'den', 'det', 'denna', 'denne']
-	pronomenCounter = [0]*len(pronomen)
-	# Go through each json file in container
-	for data in conn.get_container(container_name)[1]:
-		# data['name'] --> file name
-		obj_tuple = conn.get_object(container_name, data['name'])	
-		print(str(obj_tuple[1]))	
-		# Count each pronomen inside json file, print inside new json
-		# Name of file data['name']		
-		#with open(data['name'], 'r') as twitter_text:
-		with open(data['name']) as twitter_text:		
-			twitter_text.write(obj_tuple[1]) # Downloads json file on machine			
-			for line in obj_tuple[1]
+# Goes through each json file in container
+# for data in conn.get_container(container_name)[1]:
+# 	obj_tuple = conn.get_object(container_name, data['name'])
+
+# Only check one json file in container	
+	obj_tuple = conn.get_object(container_name, '05cb5036-2170-401b-947d-68f9191b21c6')
+	
+	# Download file (Can not figure out how to skip this step...)
+	with open("temp", 'w') as twitter_text:
+		twitter_text.write(obj_tuple[1])
+	# Open temporary file and count pronomen	
+	with open("temp", 'r') as twitter_text:
+		for line in twitter_text:
+			try:
+				tweet = json.loads(line)
 				for i in range(len(pronomen)):
 					if(pronomen[i] in tweet['text'] and ('RT' not in tweet['text'])):
-					pronomenCounter[i] += 1	
-					count += 1
-# get result : ) ? returna nåt kanskeke		
-	return "End celery tweetRetrieve"
+						pronomenCounter[i] += 1	
+						count += 1	
+			except:
+				continue
+#	for contr in pronomenCounter:
+#		print(contr)
+	return "End celery tweetRetrieve count = " + str(count)
 
 if __name__ == '__main__':
 	app.run(debug=True)
