@@ -2,6 +2,7 @@ from flask import Flask
 from tasks import make_celery
 import os
 import swiftclient
+from collections import Counter
 try:
 	import json
 except ImportError:
@@ -9,11 +10,6 @@ except ImportError:
 
 # Containers name to retreive documents from
 container_name 	= 'tweets'
-# Words to count (pronomen in this case)	
-pronomen 		= ['han', 'hon', 'hen', 'den', 'det', 'denna', 'denne']
-pronomenCounter = [0]*len(pronomen)
-# Total count of pronomens
-count 			= 0 
 
 # Setup connection to swift client containers
 config = {'user':os.environ['OS_USERNAME'],
@@ -31,14 +27,19 @@ app.config['CELERY_BACKEND']='rpc://'
 celery = make_celery(app)
 
 # Method done by the flask app
-@app.route('/process')
+@app.route('/twitterCount')
 def process():
 	tweetRetrieveAndCount.delay()
-	return "End flask route"
+	
+	return "End flask route\n"
 
 # Task that is beeing done by the celery workers
 @celery.task(name= 'celery_ex.tweetRetrieveAndCount')
 def tweetRetrieveAndCount():
+	# Words to count (pronomen in this case)	
+	pronomen = {'han': 0, 'hon': 0, 'hen': 0, 
+				'den': 0, 'det': 0, 'denna': 0, 'denne': 0}
+
 # Goes through each json file in container
 # for data in conn.get_container(container_name)[1]:
 # 	obj_tuple = conn.get_object(container_name, data['name'])
@@ -54,15 +55,22 @@ def tweetRetrieveAndCount():
 		for line in twitter_text:
 			try:
 				tweet = json.loads(line)
-				for i in range(len(pronomen)):
-					if(pronomen[i] in tweet['text'] and ('RT' not in tweet['text'])):
-						pronomenCounter[i] += 1	
-						count += 1	
+				if 'retweeted_status' not in tweet:
+				# Basically dictionary, count of each word --> {'i': 2, 'am': 2}
+					countsWord = Counter(tweet['text'].lower().split())
+			 		for key in pronomen:
+						if key in countsWord:
+							pronomen[key] += countsWord[key]
 			except:
 				continue
-#	for contr in pronomenCounter:
-#		print(contr)
+
+	print(pronomen)
+	# Create json file called result	
+	with open("result", 'w') as result:
+		result.write(json.dumps(pronomen, ensure_ascii=False))		
+	
 	return "End celery tweetRetrieve count = " + str(count)
 
 if __name__ == '__main__':
 	app.run(debug=True)
+
