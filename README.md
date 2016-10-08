@@ -24,8 +24,12 @@ sudo pip install pygal
 All the neccesary files are in labb3/CeleryFlaskRetrieveTwitt/
 
 Open 2 terminals and ssh to instance, source g2015034-openrc.sh to each
+
 terminal 1: celery -A celery_flask_TwitterCounter.celery worker --loglevel=info
+
 terminal 2: python celery_flask_TwitterCounter.py
+
 Open webpage from any computer do 
 http://floatingip:port/vis 		       (gives visualization if result file there)
+
 http://floatingip:port/twitterCount  (gives request to celery)
