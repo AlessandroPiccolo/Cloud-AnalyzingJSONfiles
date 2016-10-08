@@ -8,19 +8,7 @@ results: <br />
 
 A json file downloaded from the swift container looks like the "tweets" file.
 
-# How to use on Ubuntu
-sudo apt-get update
-sudo apt-get upgrade
-sudo apt-get install rabbitmq-server
-sudo locale-gen sv_SE.UTF-8
-sudo apt-get install python-pip
-sudo pip install celery
-sudo apt install python-celery-common
-sudo pip install flask 
-sudo pip install python-swiftclient
-sudo apt-get install python-keystoneclient
-sudo pip install pygal
-
+## How to use on Ubuntu16
 All the neccesary files are in labb3/CeleryFlaskRetrieveTwitt/ <br />
 Open 2 terminals and ssh to instance, source g2015034-openrc.sh to each <br />
 terminal 1: celery -A celery_flask_TwitterCounter.celery worker --loglevel=info <br />
@@ -29,3 +17,16 @@ terminal 2: python celery_flask_TwitterCounter.py <br />
 Open webpage from any computer do  <br />
 http://floatingip:port/vis 		       (gives visualization if result file there) <br />
 http://floatingip:port/twitterCount  (gives request to celery) <br />
+
+## Need to install Ubuntu16
+sudo apt-get update<br />
+sudo apt-get upgrade<br />
+sudo apt-get install rabbitmq-server<br />
+sudo locale-gen sv_SE.UTF-8<br />
+sudo apt-get install python-pip<br />
+sudo pip install celery<br />
+sudo apt install python-celery-common<br />
+sudo pip install flask <br />
+sudo pip install python-swiftclient<br />
+sudo apt-get install python-keystoneclient<br />
+sudo pip install pygal<br />
