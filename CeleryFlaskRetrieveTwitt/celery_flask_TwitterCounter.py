@@ -6,6 +6,7 @@ import sys
 import swiftclient
 import pygal
 import ast
+import StringIO
 from collections import Counter
 try:
 	import json
@@ -30,20 +31,15 @@ app.config['CELERY_BACKEND']='rpc://'
 # Create cellery worker
 celery = make_celery(app)
 
-################# Flask Methods
+################# Flask Methods #################
 
-# Main homepage
-#@app.route('/')
-#def homepage():
-#        return render_template("main.html")
-
-# Method done by the flask app
+# Request celery to count pronomen in tweets
 @app.route('/twitterCount', methods=["GET"])
 def twitterCount():
 	tweetRetrieveAndCount.delay()
 	return "Requesting celery to count pronomen in twitter feed\n"
 
-# Creates bar graph out of json file 
+# Creates bar graph out of json file
 @app.route('/vis', methods=["GET"])
 def vis():
         if os.path.isfile("result"):
@@ -52,7 +48,7 @@ def vis():
 			try:
 				#result_dict =  json.loads(result_json)
 				result_dict = ast.literal_eval(result_json.read())
-				total_count  = sum(result_dict.values()) 
+				total_count  = sum(result_dict.values())
 				for key in result_dict:
 					#temp = (result_dict[key]/total_count)*100
 					bar_chart.add(key, [(result_dict[key]/total_count)*100])
@@ -65,43 +61,35 @@ def vis():
 	else:
         	return "No result present, run twitter count\n"
 
-################## Celery Methods
+################# Celery Methods #################
 
 # Task that is beeing done by the celery worker
 @celery.task(name= 'celery_ex.tweetRetrieveAndCount')
 def tweetRetrieveAndCount():
-	# Words to count (pronomen in this case)	
-	pronomen = {'han': 0, 'hon': 0, 'hen': 0, 
+	# Words to count (pronomen in this case)
+	pronomen = {'han': 0, 'hon': 0, 'hen': 0,
 		    'den': 0, 'det': 0, 'denna': 0, 'denne': 0}
-
+	#amount_files_to_use = 5 # Number of json files to use in count
+	#counter_temp = 0;
 	# Goes through each json file in container
-	counter_temp = 0;
 	for data in conn.get_container(container_name)[1]:
-		counter_temp +=1
-		if counter_temp == 2:
-			break
+		#counter_temp +=1
+		#if counter_temp == amount_files_to_use:
+		#	break
  		obj_tuple = conn.get_object(container_name, data['name'])
-
-# Only check one json file in container	
-#	obj_tuple = conn.get_object(container_name, '05cb5036-2170-401b-947d-68f9191b21c6')
-
-		# Download file (Can not figure out how to skip this step...)
-		#with open("temp", 'w') as twitter_text:
-		#	twitter_text.write(obj_tuple[1])
-		# Open temporary file and count pronomen
-		#with open("temp", 'r') as twitter_text:
 		currentLine = 0
-		for line in obj_tuple[1]:
-			print(line)
+		# Splitlines --> returns list of lines, each {} becomes an element
+		# [json object, "/n", json obj, "/n" ... ]
+		for line in obj_tuple[1].splitlines():
 			currentLine += 1
 			if currentLine % 2 == 0:
-				continue # Jump to next iteration, skip even empty lines
+				continue # Jump to next iteration, skip odd empty lines
 			try:
-				tweet = json.loads(line)
+				tweet = json.loads(line) # Tweet is dictionary
 				if 'retweeted_status' not in tweet:
 				# Basically dictionary, count of each word --> {'i': 2, 'am': 2}
 					countsWord = Counter(tweet['text'].lower().split())
-			 		for key in pronomen:
+					for key in pronomen:
 						if key in countsWord:
 							pronomen[key] += countsWord[key]
 			except ValueError:
