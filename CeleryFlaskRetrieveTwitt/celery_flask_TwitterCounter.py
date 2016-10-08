@@ -1,6 +1,7 @@
 from flask import Flask
 from tasks import make_celery
 import os
+import sys
 import swiftclient
 from collections import Counter
 try:
@@ -16,7 +17,7 @@ config = {'user':os.environ['OS_USERNAME'],
           'key':os.environ['OS_PASSWORD'],
           'tenant_name':os.environ['OS_TENANT_NAME'],
           'authurl':os.environ['OS_AUTH_URL']}
-conn = swiftclient.Connection(auth_version=3, **config)          
+conn = swiftclient.Connection(auth_version=3, **config)
 
 # Create flask app
 app = Flask(__name__)
@@ -50,9 +51,13 @@ def tweetRetrieveAndCount():
 	# Download file (Can not figure out how to skip this step...)
 	with open("temp", 'w') as twitter_text:
 		twitter_text.write(obj_tuple[1])
-	# Open temporary file and count pronomen	
+	# Open temporary file and count pronomen
 	with open("temp", 'r') as twitter_text:
+		currentLine = 0
 		for line in twitter_text:
+			currentLine += 1
+			if currentLine % 2 == 0:
+				continue # Jump to next iteration, skip even empty lines
 			try:
 				tweet = json.loads(line)
 				if 'retweeted_status' not in tweet:
@@ -61,14 +66,16 @@ def tweetRetrieveAndCount():
 			 		for key in pronomen:
 						if key in countsWord:
 							pronomen[key] += countsWord[key]
+			except ValueError:
+				print(ValueError)
 			except:
 				continue
 
 	print(pronomen)
-	# Create json file called result	
+	# Create json file called result
 	with open("result", 'w') as result:
 		result.write(json.dumps(pronomen, ensure_ascii=False))		
-	
+
 	return "End celery tweetRetrieve"
 
 if __name__ == '__main__':
