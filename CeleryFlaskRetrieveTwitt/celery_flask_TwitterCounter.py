@@ -43,17 +43,18 @@ def twitterCount():
 @app.route('/vis', methods=["GET"])
 def vis():
         if os.path.isfile("result"):
-		bar_chart = pygal.Pie()
+		bar_chart = pygal.Pie() % Make pie chart in pygal
 		with open("result", 'r') as result_json:
 			try:
 				#result_dict =  json.loads(result_json)
 				result_dict = ast.literal_eval(result_json.read())
 				total_count  = sum(result_dict.values())
+				# Add actual data for making graph
 				for key in result_dict:
-					#temp = (result_dict[key]/total_count)*100
 					bar_chart.add(key, [(result_dict[key]/total_count)*100])
 			except Exception, e:
 				return(str(e))
+		# Giving the chart (pygal object) info
 		bar_chart.y_title = "Relative usage of pronomen in tweets [%]"
 		bar_chart.title = "Usage of different pronumens in tweets"
 		bar_chart_data = bar_chart.render_data_uri()
@@ -85,12 +86,12 @@ def tweetRetrieveAndCount():
 			if currentLine % 2 == 0:
 				continue # Jump to next iteration, skip odd empty lines
 			try:
-				tweet = json.loads(line) # Tweet is dictionary
-				if 'retweeted_status' not in tweet:
-				# Basically dictionary, count of each word --> {'i': 2, 'am': 2}
+				tweet = json.loads(line) # Tweet is dictionary now
+				if 'retweeted_status' not in tweet: # Only unique tweets!
+					# Basically dictionary, count of each word --> {'i': 2, 'am': 2}
 					countsWord = Counter(tweet['text'].lower().split())
 					for key in pronomen:
-						if key in countsWord:
+						if key in countsWord: # Find pronomen in tweets
 							pronomen[key] += countsWord[key]
 			except ValueError:
 				print(ValueError)
