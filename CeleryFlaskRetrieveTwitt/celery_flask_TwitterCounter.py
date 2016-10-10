@@ -46,7 +46,6 @@ def vis():
 		bar_chart = pygal.Pie() % Make pie chart in pygal
 		with open("result", 'r') as result_json:
 			try:
-				#result_dict =  json.loads(result_json)
 				result_dict = ast.literal_eval(result_json.read())
 				total_count  = sum(result_dict.values())
 				# Add actual data for making graph
