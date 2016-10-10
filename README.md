@@ -9,7 +9,7 @@ results: <br />
 A json file downloaded from the swift container looks like the "tweets" file.
 
 ## How to use on Ubuntu16
-All the neccesary files are in labb3/CeleryFlaskRetrieveTwitt/ <br />
+All the neccesary files are in /CeleryFlaskRetrieveTwitt/ <br />
 Open 2 terminals and ssh to instance, source g2015034-openrc.sh to each <br />
 terminal 1: celery -A celery_flask_TwitterCounter.celery worker --loglevel=info <br />
 terminal 2: python celery_flask_TwitterCounter.py <br />
