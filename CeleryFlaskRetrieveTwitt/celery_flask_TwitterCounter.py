@@ -43,7 +43,7 @@ def twitterCount():
 @app.route('/vis', methods=["GET"])
 def vis():
         if os.path.isfile("result"):
-		bar_chart = pygal.Pie() % Make pie chart in pygal
+		bar_chart = pygal.Pie() # Make pie chart in pygal
 		with open("result", 'r') as result_json:
 			try:
 				result_dict = ast.literal_eval(result_json.read())
